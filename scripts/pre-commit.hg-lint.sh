@@ -13,12 +13,35 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+RED='\033[0;31m'
+CLEAR='\033[0m'
+
 # First part return the files being commited, excluding deleted files.
 if [ "$NO_VERIFY" != "" ]; then
     exit 0
 fi
 
-hg status --change $HG_NODE | cut -b 3- | tr '\n' '\0' |
+# Builds a list of removed files to display them before proceeding with the linters
+# Allow developer to review if something was accidentally removed and fix
+has_removed_files(){
+  declare -a REMOVED
+  readarray -t REMOVED <<< $(hg status -r -d)
+
+  if [ "$(echo -ne ${REMOVED[@]} | wc -m)" -gt 0 ]; then
+    printf "%b" $RED
+    echo "============== WARNING: FILE REMOVAL FOUND ================"
+    echo " The following were removed:"
+    printf "%s\n" "${REMOVED[@]}"
+    echo "==========================================================="
+  fi
+}
+
+has_removed_files
+
+
+# Add switches to check for -m (modified) and -a (added files)
+# removed and deleted files don't need to be checked ;)
+hg status -m -a --change $HG_NODE | cut -b 3- | tr '\n' '\0' |
 xargs --null --no-run-if-empty git-lint;
 
 if [ "$?" != "0" ]; then
