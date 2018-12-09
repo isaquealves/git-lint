@@ -158,3 +158,6 @@ class HgTest(unittest.TestCase):
     def test_last_commit_not_in_repo(self, check_output):
         check_output.side_effect = subprocess.CalledProcessError(255, '', '')
         self.assertEqual(None, hg.last_commit())
+
+    def test_get_commitmsg_file_path(self):
+        self.assertEqual('/home/user/repo/.hg/last-message.txt', gitlint.get_commitmsg_file_path('/home/user/repo/'))
