@@ -562,4 +562,5 @@ class GitLintTest(fake_filesystem_unittest.TestCase):
         with mock.patch('gitlint.hg.get_commitmsg_file_path', return_value='/tmp/temp_msg.txt'):
             with mock.patch('gitlint.is_merge_commit', return_value=True):
                 self.assertEqual(0, gitlint.main([], stdout=self.stdout, stderr=None))
-                self.assertIn("This is a merge commit. We won't check it", self.stdout.getvalue())
+                self.assertIn("This is a merge commit. We won't check it",
+                              self.stdout.getvalue())
