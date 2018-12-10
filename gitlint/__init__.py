@@ -52,7 +52,6 @@ import yaml
 import docopt
 import termcolor
 
-
 import gitlint.git as git
 import gitlint.hg as hg
 import gitlint.linters as linters
@@ -297,9 +296,10 @@ def main(argv, stdout=sys.stdout, stderr=sys.stderr):
             as executor:
         processfile = functools.partial(process_file, vcs, commit,
                                         arguments['--force'], gitlint_config)
+
         for filename, result in executor.map(processfile,
                                    [(filename, modified_files[filename]) for
-                                    filename in sorted(modified_files.keys())]): #pylint: disable=undefined-loop-variable
+                                    filename in sorted(modified_files.keys())]):
 
             rel_filename = os.path.relpath(filename)
 
