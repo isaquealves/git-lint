@@ -48,10 +48,10 @@ import os.path
 import sys
 from types import ModuleType
 from concurrent import futures
-
+import yaml
 import docopt
 import termcolor
-import yaml
+
 
 import gitlint.git as git
 import gitlint.hg as hg
@@ -67,10 +67,21 @@ MERGE_COMMIT_WARNIG = "This is a merge commit. We won't check it"
 
 
 def is_mercurial(vcs):
+    """Check if the current loaded vcs is mercurial
+    Params:
+        vcs: The vcs module reference
+    """
     return isinstance(vcs, ModuleType) and vcs.__name__ == 'gitlint.hg'
 
 
 def is_merge_commit(vcs, repo_root):
+    """Check if submitted commit is a merge commit
+    Args:
+        vcs: Module reference for one of gitlint.hg or gitlint.git
+        repository_root: the absolute path of the repository's root.
+    Returns: Boolean value depending on the content of the message.
+        True if the commit message contains the 'merg' word root.
+    """
     file_path = vcs.get_commitmsg_file_path(repo_root)
 
     if not os.path.exists(file_path):
@@ -88,6 +99,11 @@ def is_merge_commit(vcs, repo_root):
 
 
 def print_merge_commit_warning(output_stream, line_separator):
+    """Show output for the case of submitting a merge commit
+    Args:
+        output_stream: The output stream
+        line_separator: The system's default new line separator
+    """
     block_separator = "================================================"
     warning = termcolor.colored(MERGE_COMMIT_WARNIG, attrs=('bold',))
     output_stream.write("%s%s" % (block_separator, line_separator))
@@ -107,13 +123,13 @@ def find_invalid_filenames(filenames, repository_root):
     for filename in filenames:
         if not os.path.abspath(filename).startswith(repository_root):
             errors.append((filename, 'Error: File %s does not belong to '
-                          'repository %s' % (filename, repository_root)))
+                           'repository %s' % (filename, repository_root)))
         if not os.path.exists(filename):
             errors.append((filename,
-                          'Error: File %s does not exist' % (filename, )))
+                           'Error: File %s does not exist' % (filename, )))
         if os.path.isdir(filename):
             errors.append((filename, 'Error: %s is a directory. Directories are'
-                          ' not yet supported' % (filename, )))
+                           ' not yet supported' % (filename, )))
 
     return errors
 
@@ -283,7 +299,7 @@ def main(argv, stdout=sys.stdout, stderr=sys.stderr):
                                         arguments['--force'], gitlint_config)
         for filename, result in executor.map(processfile,
                                    [(filename, modified_files[filename]) for
-                                    filename in sorted(modified_files.keys())]):
+                                    filename in sorted(modified_files.keys())]): #pylint: disable=undefined-loop-variable
 
             rel_filename = os.path.relpath(filename)
 

@@ -555,7 +555,7 @@ class GitLintTest(fake_filesystem_unittest.TestCase):
         with mock.patch('gitlint.hg.get_commitmsg_file_path',
                         return_value='/tmp/temp_msg.txt'):
             self.assertTrue(gitlint.is_merge_commit(gitlint.hg, '/tmp/'))
-            
+
     @mock.patch('gitlint.get_vcs_root')
     def test_main_with_a_merge_commit(self, get_repo_root):
         self.fs.create_file('/tmp/temp_msg.txt',
