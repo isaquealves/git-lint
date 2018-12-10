@@ -291,7 +291,7 @@ def main(argv, stdout=sys.stdout, stderr=sys.stderr):
     files_with_problems = 0
     gitlint_config = get_config(repository_root)
     json_result = {}
-
+    filename = ""
     with futures.ThreadPoolExecutor(max_workers=multiprocessing.cpu_count())\
             as executor:
         processfile = functools.partial(process_file, vcs, commit,
