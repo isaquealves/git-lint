@@ -58,22 +58,21 @@ import gitlint.hg as hg
 import gitlint.linters as linters
 from gitlint.version import __VERSION__
 
-
 ERROR = termcolor.colored('ERROR', 'red', attrs=('bold',))
 SKIPPED = termcolor.colored('SKIPPED', 'yellow', attrs=('bold',))
 OK = termcolor.colored('OK', 'green', attrs=('bold',))
 
-MERGE_STRING_ROOT='merg'
-MERGE_COMMIT_WARNIG="This is a merge commit. We won't check it"
+MERGE_STRING_ROOT = 'merg'
+MERGE_COMMIT_WARNIG = "This is a merge commit. We won't check it"
 
 
 def is_mercurial(vcs):
     return isinstance(vcs, ModuleType) and vcs.__name__ == 'gitlint.hg'
 
-def is_merge_commit(vcs, repo_root):
 
+def is_merge_commit(vcs, repo_root):
     file_path = vcs.get_commitmsg_file_path(repo_root)
-    
+
     if not os.path.exists(file_path):
         return False
 

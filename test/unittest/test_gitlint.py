@@ -545,13 +545,15 @@ class GitLintTest(fake_filesystem_unittest.TestCase):
     def test_is_merge_commit_not_a_merge(self):
         self.fs.create_file('/tmp/temp_msg.txt',
                             contents="Test ordinary commit message")
-        with mock.patch('gitlint.hg.get_commitmsg_file_path', return_value='/tmp/temp_msg.txt'):
+        with mock.patch('gitlint.hg.get_commitmsg_file_path',
+                        return_value='/tmp/temp_msg.txt'):
             self.assertFalse(gitlint.is_merge_commit(gitlint.hg, '/tmp/'))
 
     def test_is_merge_commit_with_merge(self):
         self.fs.create_file('/tmp/temp_msg.txt',
                             contents="Test merge commit message")
-        with mock.patch('gitlint.hg.get_commitmsg_file_path', return_value='/tmp/temp_msg.txt'):
+        with mock.patch('gitlint.hg.get_commitmsg_file_path',
+                        return_value='/tmp/temp_msg.txt'):
             self.assertTrue(gitlint.is_merge_commit(gitlint.hg, '/tmp/'))
             
     @mock.patch('gitlint.get_vcs_root')
@@ -559,8 +561,11 @@ class GitLintTest(fake_filesystem_unittest.TestCase):
         self.fs.create_file('/tmp/temp_msg.txt',
                             contents="Test merge commit message")
         get_repo_root.return_value = [gitlint.hg, '/tmp']
-        with mock.patch('gitlint.hg.get_commitmsg_file_path', return_value='/tmp/temp_msg.txt'):
+        with mock.patch('gitlint.hg.get_commitmsg_file_path',
+                        return_value='/tmp/temp_msg.txt'):
             with mock.patch('gitlint.is_merge_commit', return_value=True):
-                self.assertEqual(0, gitlint.main([], stdout=self.stdout, stderr=None))
+                self.assertEqual(0, gitlint.main([],
+                                                 stdout=self.stdout,
+                                                 stderr=None))
                 self.assertIn("This is a merge commit. We won't check it",
                               self.stdout.getvalue())
