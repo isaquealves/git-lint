@@ -33,9 +33,9 @@ class Partial(functools.partial):
 
     def __repr__(self):
         # This method should never be executed, only in failing tests.
-        return (
-            'Partial: func: %s, args: %s, kwargs: %s' %
-            (self.func.__name__, self.args, self.keywords))  # pragma: no cover
+        return ('Partial: func: %s, args: %s, kwargs: %s' %
+                (self.func.__name__, self.args,
+                 self.keywords))  # pragma: no cover
 
 
 def missing_requirements_command(missing_programs, installation_string,

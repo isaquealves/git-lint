@@ -57,9 +57,9 @@ import gitlint.hg as hg
 import gitlint.linters as linters
 from gitlint.version import __VERSION__
 
-ERROR = termcolor.colored('ERROR', 'red', attrs=('bold',))
-SKIPPED = termcolor.colored('SKIPPED', 'yellow', attrs=('bold',))
-OK = termcolor.colored('OK', 'green', attrs=('bold',))
+ERROR = termcolor.colored('ERROR', 'red', attrs=('bold', ))
+SKIPPED = termcolor.colored('SKIPPED', 'yellow', attrs=('bold', ))
+OK = termcolor.colored('OK', 'green', attrs=('bold', ))
 
 MERGE_STRING_ROOT = 'merg'
 MERGE_COMMIT_WARNIG = "This is a merge commit. We won't check it"
@@ -104,10 +104,11 @@ def print_merge_commit_warning(output_stream, line_separator):
         line_separator: The system's default new line separator
     """
     block_separator = "================================================"
-    warning = termcolor.colored(MERGE_COMMIT_WARNIG, attrs=('bold',))
+    warning = termcolor.colored(MERGE_COMMIT_WARNIG, attrs=('bold', ))
     output_stream.write("%s%s" % (block_separator, line_separator))
     output_stream.write("%s%s" % (warning, line_separator))
     output_stream.write("%s%s" % (block_separator, line_separator))
+
 
 def find_invalid_filenames(filenames, repository_root):
     """Find files that does not exist, are not in the repo or are directories.
@@ -127,7 +128,8 @@ def find_invalid_filenames(filenames, repository_root):
             errors.append((filename,
                            'Error: File %s does not exist' % (filename, )))
         if os.path.isdir(filename):
-            errors.append((filename, 'Error: %s is a directory. Directories are'
+            errors.append((filename,
+                           'Error: %s is a directory. Directories are'
                            ' not yet supported' % (filename, )))
 
     return errors
@@ -222,11 +224,9 @@ def process_file(vcs, commit, force, gitlint_config, file_data):
     if force:
         modified_lines = None
     else:
-        modified_lines = vcs.modified_lines(filename,
-                                            extra_data,
-                                            commit=commit)
-    result = linters.lint(
-        filename, modified_lines, gitlint_config)
+        modified_lines = vcs.modified_lines(
+            filename, extra_data, commit=commit)
+    result = linters.lint(filename, modified_lines, gitlint_config)
     result = result[filename]
 
     return filename, result
@@ -243,14 +243,12 @@ def main(argv, stdout=sys.stdout, stderr=sys.stderr):
             stderr = codecs.getwriter("utf-8")(stderr)
         linesep = unicode(os.linesep)
 
-    arguments = docopt.docopt(__doc__,
-                              argv=argv[1:],
-                              version='git-lint v%s' % __VERSION__)
+    arguments = docopt.docopt(
+        __doc__, argv=argv[1:], version='git-lint v%s' % __VERSION__)
 
     json_output = arguments['--json']
 
     vcs, repository_root = get_vcs_root()
-
 
     if vcs is None:
         stderr.write('fatal: Not a git repository' + linesep)
@@ -274,18 +272,20 @@ def main(argv, stdout=sys.stdout, stderr=sys.stderr):
                 linesep.join(invalid[1] for invalid in invalid_filenames))
             return 2
 
-        changed_files = vcs.modified_files(repository_root,
-                                           tracked_only=arguments['--tracked'],
-                                           commit=commit)
+        changed_files = vcs.modified_files(
+            repository_root,
+            tracked_only=arguments['--tracked'],
+            commit=commit)
         modified_files = {}
         for filename in arguments['FILENAME']:
             normalized_filename = os.path.abspath(filename)
             modified_files[normalized_filename] = changed_files.get(
                 normalized_filename)
     else:
-        modified_files = vcs.modified_files(repository_root,
-                                            tracked_only=arguments['--tracked'],
-                                            commit=commit)
+        modified_files = vcs.modified_files(
+            repository_root,
+            tracked_only=arguments['--tracked'],
+            commit=commit)
 
     linter_not_found = False
     files_with_problems = 0
@@ -297,28 +297,26 @@ def main(argv, stdout=sys.stdout, stderr=sys.stderr):
         processfile = functools.partial(process_file, vcs, commit,
                                         arguments['--force'], gitlint_config)
 
-        for filename, result in executor.map(processfile,
-                                   [(filename, modified_files[filename]) for
-                                    filename in sorted(modified_files.keys())]):
+        for filename, result in executor.map(
+                processfile, [(filename, modified_files[filename])
+                              for filename in sorted(modified_files.keys())]):
 
             rel_filename = os.path.relpath(filename)
 
             if not json_output:
-                stdout.write('Linting file: %s%s' %
-                             (termcolor.colored(rel_filename, attrs=('bold',)),
-                              linesep))
+                stdout.write(
+                    'Linting file: %s%s' %
+                    (termcolor.colored(rel_filename, attrs=('bold', )),
+                     linesep))
 
             output_lines = []
             if result.get('error'):
-                output_lines.extend(
-                    '%s: %s' % (ERROR, reason) for reason in result.get('error')
-                )
+                output_lines.extend('%s: %s' % (ERROR, reason)
+                                    for reason in result.get('error'))
                 linter_not_found = True
             if result.get('skipped'):
-                output_lines.extend(
-                    '%s: %s' % (SKIPPED, reason) for reason in
-                    result.get('skipped')
-                )
+                output_lines.extend('%s: %s' % (SKIPPED, reason)
+                                    for reason in result.get('skipped'))
             if not result.get('comments', []):
                 if not output_lines:
                     output_lines.append(OK)
@@ -340,8 +338,8 @@ def main(argv, stdout=sys.stdout, stderr=sys.stderr):
         # Hack to convert to unicode, Python3 returns unicode, wheres Python2
         # returns str.
         stdout.write(
-            json.dumps(json_result,
-                       ensure_ascii=False).encode('utf-8').decode('utf-8'))
+            json.dumps(json_result, ensure_ascii=False).encode('utf-8').decode(
+                'utf-8'))
 
     if files_with_problems > 0:
         return 1

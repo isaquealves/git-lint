@@ -102,10 +102,9 @@ class HgTest(unittest.TestCase):
             '+        import pprint',
         ]).encode('utf-8')
 
-        self.assertEqual([201, 202, 601],
-                         list(
-                             hg.modified_lines('/home/user/repo/foo/bar.txt',
-                                               'M')))
+        self.assertEqual(
+            [201, 202, 601],
+            list(hg.modified_lines('/home/user/repo/foo/bar.txt', 'M')))
         check_output.assert_called_once_with(
             ['hg', 'diff', '-U', '0', '/home/user/repo/foo/bar.txt'])
 
@@ -123,12 +122,11 @@ class HgTest(unittest.TestCase):
         ]).encode('utf-8')
         commit = '0123' * 10
 
-        self.assertEqual([201, 202, 601],
-                         list(
-                             hg.modified_lines(
-                                 '/home/user/repo/foo/bar.txt',
-                                 'M',
-                                 commit=commit)))
+        self.assertEqual(
+            [201, 202, 601],
+            list(
+                hg.modified_lines(
+                    '/home/user/repo/foo/bar.txt', 'M', commit=commit)))
         check_output.assert_called_once_with([
             'hg', 'diff', '-U', '0',
             '--change=%s' % commit, '/home/user/repo/foo/bar.txt'
@@ -143,10 +141,8 @@ class HgTest(unittest.TestCase):
                          hg.modified_lines('/home/user/repo/foo/bar.txt', '?'))
 
     def test_modified_lines_no_info(self):
-        self.assertEqual([],
-                         list(
-                             hg.modified_lines('/home/user/repo/foo/bar.txt',
-                                               None)))
+        self.assertEqual(
+            [], list(hg.modified_lines('/home/user/repo/foo/bar.txt', None)))
 
     @mock.patch('subprocess.check_output', return_value=b'0a' * 20 + b'\n')
     def test_last_commit(self, check_output):

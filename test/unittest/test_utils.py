@@ -38,12 +38,11 @@ class UtilsTest(fake_filesystem_unittest.TestCase):
 
     def test_filter_lines_one_group(self):
         lines = ['1: foo', '12: bar', '', 'Debug: info']
-        self.assertEqual(['1', '12'],
-                         list(
-                             utils.filter_lines(
-                                 lines,
-                                 r'(?P<line>\d+): .*',
-                                 groups=('line', ))))
+        self.assertEqual(
+            ['1', '12'],
+            list(
+                utils.filter_lines(
+                    lines, r'(?P<line>\d+): .*', groups=('line', ))))
 
     def test_filter_lines_many_groups(self):
         lines = ['1: foo', '12: bar', '', 'Debug: info']
@@ -71,12 +70,11 @@ class UtilsTest(fake_filesystem_unittest.TestCase):
 
     def test_filter_lines_group_not_defined(self):
         lines = ['1: foo', '12: bar', '', 'Debug: info']
-        self.assertEqual([('1', None), ('12', None)],
-                         list(
-                             utils.filter_lines(
-                                 lines,
-                                 r'(?P<line>\d+): .*',
-                                 groups=('line', 'debug'))))
+        self.assertEqual(
+            [('1', None), ('12', None)],
+            list(
+                utils.filter_lines(
+                    lines, r'(?P<line>\d+): .*', groups=('line', 'debug'))))
 
     @unittest.skipUnless(sys.version_info >= (3, 5),
                          'pyfakefs does not support pathlib2. See'
@@ -100,9 +98,9 @@ class UtilsTest(fake_filesystem_unittest.TestCase):
                 '/home/user/.git-lint/cache/linter2/abspath/file.txt',
                 utils._get_cache_filename('linter2', 'file.txt'))
 
-            self.assertEqual(
-                '/home/user/.git-lint/cache/linter3/bar/file.txt',
-                utils._get_cache_filename('linter3', '/bar/file.txt'))
+            self.assertEqual('/home/user/.git-lint/cache/linter3/bar/file.txt',
+                             utils._get_cache_filename('linter3',
+                                                       '/bar/file.txt'))
 
     @unittest.skipUnless(sys.version_info >= (3, 5),
                          'pyfakefs does not support pathlib2. See'

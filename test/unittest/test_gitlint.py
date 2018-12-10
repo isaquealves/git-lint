@@ -147,11 +147,11 @@ class GitLintTest(fake_filesystem_unittest.TestCase):
         lint_response = {self.filename: {'comments': []}}
         self.lint.return_value = lint_response
 
-        self.assertEqual(
-            0,
-            gitlint.main(
-                ['git-lint', '--last-commit'], stdout=self.stdout,
-                stderr=None))
+        self.assertEqual(0,
+                         gitlint.main(
+                             ['git-lint', '--last-commit'],
+                             stdout=self.stdout,
+                             stderr=None))
         self.assertIn('OK', self.stdout.getvalue())
         self.assert_mocked_calls(commit='abcd' * 10)
 
@@ -159,9 +159,11 @@ class GitLintTest(fake_filesystem_unittest.TestCase):
         lint_response = {self.filename: {'comments': []}}
         self.lint.return_value = lint_response
 
-        self.assertEqual(
-            0, gitlint.main(
-                ['git-lint', '-t'], stdout=self.stdout, stderr=None))
+        self.assertEqual(0,
+                         gitlint.main(
+                             ['git-lint', '-t'],
+                             stdout=self.stdout,
+                             stderr=None))
         self.assertIn('OK', self.stdout.getvalue())
         self.assert_mocked_calls(tracked_only=True)
 
@@ -169,10 +171,11 @@ class GitLintTest(fake_filesystem_unittest.TestCase):
         self.stdout = io.StringIO()
         self.stderr = io.StringIO()
 
-        self.assertEqual(
-            0,
-            gitlint.main(
-                ['git-lint', '--tracked'], stdout=self.stdout, stderr=None))
+        self.assertEqual(0,
+                         gitlint.main(
+                             ['git-lint', '--tracked'],
+                             stdout=self.stdout,
+                             stderr=None))
         self.assertIn('OK', self.stdout.getvalue())
         self.assert_mocked_calls(tracked_only=True)
 
@@ -274,10 +277,11 @@ class GitLintTest(fake_filesystem_unittest.TestCase):
             },
         }
 
-        self.assertEqual(
-            1,
-            gitlint.main(
-                ['git-lint', '--json'], stdout=self.stdout, stderr=None))
+        self.assertEqual(1,
+                         gitlint.main(
+                             ['git-lint', '--json'],
+                             stdout=self.stdout,
+                             stderr=None))
         self.assertEqual(expected_response, json.loads(self.stdout.getvalue()))
 
     def test_main_file_with_skipped_and_error(self):
@@ -308,10 +312,11 @@ class GitLintTest(fake_filesystem_unittest.TestCase):
         self.lint.return_value = lint_response
         self.git_modified_lines.return_value = []
 
-        self.assertEqual(
-            1,
-            gitlint.main(
-                ['git-lint', '--force'], stdout=self.stdout, stderr=None))
+        self.assertEqual(1,
+                         gitlint.main(
+                             ['git-lint', '--force'],
+                             stdout=self.stdout,
+                             stderr=None))
         self.assertIn('line 3: error', self.stdout.getvalue())
 
         self.git_modified_files.assert_called_once_with(
@@ -321,9 +326,11 @@ class GitLintTest(fake_filesystem_unittest.TestCase):
         self.reset_mock_calls()
         self.stdout = io.StringIO()
 
-        self.assertEqual(
-            1, gitlint.main(
-                ['git-lint', '-f'], stdout=self.stdout, stderr=None))
+        self.assertEqual(1,
+                         gitlint.main(
+                             ['git-lint', '-f'],
+                             stdout=self.stdout,
+                             stderr=None))
         self.assertIn('line 3: error', self.stdout.getvalue())
 
         self.git_modified_files.assert_called_once_with(
@@ -334,10 +341,11 @@ class GitLintTest(fake_filesystem_unittest.TestCase):
         with mock.patch(
                 'gitlint.find_invalid_filenames',
                 return_value=[('foo.txt', 'does not exist')]):
-            self.assertEqual(
-                2,
-                gitlint.main(
-                    ['git-lint', 'foo.txt'], stdout=None, stderr=self.stderr))
+            self.assertEqual(2,
+                             gitlint.main(
+                                 ['git-lint', 'foo.txt'],
+                                 stdout=None,
+                                 stderr=self.stderr))
             self.assertIn('does not exist', self.stderr.getvalue())
 
     def test_main_with_valid_files(self):
@@ -352,12 +360,11 @@ class GitLintTest(fake_filesystem_unittest.TestCase):
         self.lint.return_value = lint_response
 
         with mock.patch('gitlint.find_invalid_filenames', return_value=[]):
-            self.assertEqual(
-                0,
-                gitlint.main(
-                    ['git-lint', self.filename, self.filename2],
-                    stdout=self.stdout,
-                    stderr=None))
+            self.assertEqual(0,
+                             gitlint.main(
+                                 ['git-lint', self.filename, self.filename2],
+                                 stdout=self.stdout,
+                                 stderr=None))
             self.assertIn('OK', self.stdout.getvalue())
             self.assertIn(
                 os.path.basename(self.filename), self.stdout.getvalue())
@@ -431,12 +438,11 @@ class GitLintTest(fake_filesystem_unittest.TestCase):
         self.lint.return_value = lint_response
 
         with mock.patch('gitlint.find_invalid_filenames', return_value=[]):
-            self.assertEqual(
-                1,
-                gitlint.main(
-                    ['git-lint', self.filename, self.filename2],
-                    stdout=self.stdout,
-                    stderr=None))
+            self.assertEqual(1,
+                             gitlint.main(
+                                 ['git-lint', self.filename, self.filename2],
+                                 stdout=self.stdout,
+                                 stderr=None))
             expected_output = os.linesep.join([
                 '\x1b[1m\x1b[31mERROR\x1b[0m: error1',
                 '\x1b[1m\x1b[31mERROR\x1b[0m: error2',
@@ -482,51 +488,45 @@ class GitLintTest(fake_filesystem_unittest.TestCase):
 
     def test_format_comment(self):
         self.assertEqual('', gitlint.format_comment({}))
-        self.assertEqual(
-            'line 1: message',
-            gitlint.format_comment({
-                'line': 1,
-                'message': 'message',
-            }))
-        self.assertEqual(
-            'line 1, col 2: message',
-            gitlint.format_comment({
-                'line': 1,
-                'column': 2,
-                'message': 'message',
-            }))
-        self.assertEqual(
-            'line 1, col 2: Error: message',
-            gitlint.format_comment({
-                'line': 1,
-                'column': 2,
-                'severity': 'Error',
-                'message': 'message',
-            }))
-        self.assertEqual(
-            'line 1, col 2: Error: [not-used]: message',
-            gitlint.format_comment({
-                'line': 1,
-                'column': 2,
-                'severity': 'Error',
-                'message_id': 'not-used',
-                'message': 'message',
-            }))
-        self.assertEqual(
-            'col 2: [not-used]: message',
-            gitlint.format_comment({
-                'column': 2,
-                'message_id': 'not-used',
-                'message': 'message',
-            }))
-        self.assertEqual(
-            'line 1, col 2: Error: [not-used]: ',
-            gitlint.format_comment({
-                'line': 1,
-                'column': 2,
-                'severity': 'Error',
-                'message_id': 'not-used',
-            }))
+        self.assertEqual('line 1: message',
+                         gitlint.format_comment({
+                             'line': 1,
+                             'message': 'message',
+                         }))
+        self.assertEqual('line 1, col 2: message',
+                         gitlint.format_comment({
+                             'line': 1,
+                             'column': 2,
+                             'message': 'message',
+                         }))
+        self.assertEqual('line 1, col 2: Error: message',
+                         gitlint.format_comment({
+                             'line': 1,
+                             'column': 2,
+                             'severity': 'Error',
+                             'message': 'message',
+                         }))
+        self.assertEqual('line 1, col 2: Error: [not-used]: message',
+                         gitlint.format_comment({
+                             'line': 1,
+                             'column': 2,
+                             'severity': 'Error',
+                             'message_id': 'not-used',
+                             'message': 'message',
+                         }))
+        self.assertEqual('col 2: [not-used]: message',
+                         gitlint.format_comment({
+                             'column': 2,
+                             'message_id': 'not-used',
+                             'message': 'message',
+                         }))
+        self.assertEqual('line 1, col 2: Error: [not-used]: ',
+                         gitlint.format_comment({
+                             'line': 1,
+                             'column': 2,
+                             'severity': 'Error',
+                             'message_id': 'not-used',
+                         }))
 
     def test_get_vcs_git(self):
         self.git_repository_root.return_value = self.root
@@ -543,29 +543,32 @@ class GitLintTest(fake_filesystem_unittest.TestCase):
         self.assertEqual((None, None), gitlint.get_vcs_root())
 
     def test_is_merge_commit_not_a_merge(self):
-        self.fs.create_file('/tmp/temp_msg.txt',
-                            contents="Test ordinary commit message")
-        with mock.patch('gitlint.hg.get_commitmsg_file_path',
-                        return_value='/tmp/temp_msg.txt'):
+        self.fs.create_file(
+            '/tmp/temp_msg.txt', contents="Test ordinary commit message")
+        with mock.patch(
+                'gitlint.hg.get_commitmsg_file_path',
+                return_value='/tmp/temp_msg.txt'):
             self.assertFalse(gitlint.is_merge_commit(gitlint.hg, '/tmp/'))
 
     def test_is_merge_commit_with_merge(self):
-        self.fs.create_file('/tmp/temp_msg.txt',
-                            contents="Test merge commit message")
-        with mock.patch('gitlint.hg.get_commitmsg_file_path',
-                        return_value='/tmp/temp_msg.txt'):
+        self.fs.create_file(
+            '/tmp/temp_msg.txt', contents="Test merge commit message")
+        with mock.patch(
+                'gitlint.hg.get_commitmsg_file_path',
+                return_value='/tmp/temp_msg.txt'):
             self.assertTrue(gitlint.is_merge_commit(gitlint.hg, '/tmp/'))
 
     @mock.patch('gitlint.get_vcs_root')
     def test_main_with_a_merge_commit(self, get_repo_root):
-        self.fs.create_file('/tmp/temp_msg.txt',
-                            contents="Test merge commit message")
+        self.fs.create_file(
+            '/tmp/temp_msg.txt', contents="Test merge commit message")
         get_repo_root.return_value = [gitlint.hg, '/tmp']
-        with mock.patch('gitlint.hg.get_commitmsg_file_path',
-                        return_value='/tmp/temp_msg.txt'):
+        with mock.patch(
+                'gitlint.hg.get_commitmsg_file_path',
+                return_value='/tmp/temp_msg.txt'):
             with mock.patch('gitlint.is_merge_commit', return_value=True):
-                self.assertEqual(0, gitlint.main([],
-                                                 stdout=self.stdout,
-                                                 stderr=None))
+                self.assertEqual(0,
+                                 gitlint.main(
+                                     [], stdout=self.stdout, stderr=None))
                 self.assertIn("This is a merge commit. We won't check it",
                               self.stdout.getvalue())

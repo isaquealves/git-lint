@@ -135,9 +135,9 @@ class E2EMixin(object):
         self.assertNotEquals(
             0, response,
             ('Git lint for file %s should have failed.\n git-lint output: %s' +
-             '\nLinter Output:\n%s') % (filename_error, output,
-                                        get_linter_output(
-                                            linter_name, filename_repo)))
+             '\nLinter Output:\n%s') %
+            (filename_error, output,
+             get_linter_output(linter_name, filename_repo)))
         self.add(filename_repo)
         self.commit('Commit 2')
 

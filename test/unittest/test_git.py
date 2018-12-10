@@ -102,11 +102,12 @@ class GitTest(unittest.TestCase):
         ]).encode('utf-8')
         commit = '0a' * 20
 
-        self.assertEqual(
-            {
-                '/home/user/repo/test/e2etest/data/bash/error.sh': 'M ',
-                '/home/user/repo/test/e2etest/data/rubylint/error.rb': 'A ',
-            }, git.modified_files('/home/user/repo', commit=commit))
+        self.assertEqual({
+            '/home/user/repo/test/e2etest/data/bash/error.sh':
+            'M ',
+            '/home/user/repo/test/e2etest/data/rubylint/error.rb':
+            'A ',
+        }, git.modified_files('/home/user/repo', commit=commit))
         check_output.assert_called_once_with([
             'git', 'diff-tree', '-r', '--root', '--no-commit-id',
             '--name-status', commit
@@ -123,18 +124,15 @@ class GitTest(unittest.TestCase):
             '0000000000000000000000000000000000000000 5 5', 'bar'
         ]).encode('utf-8')
 
-        self.assertEqual([2, 5],
-                         list(
-                             git.modified_lines('/home/user/repo/foo/bar.txt',
-                                                ' M')))
-        self.assertEqual([2, 5],
-                         list(
-                             git.modified_lines('/home/user/repo/foo/bar.txt',
-                                                'M ')))
-        self.assertEqual([2, 5],
-                         list(
-                             git.modified_lines('/home/user/repo/foo/bar.txt',
-                                                'MM')))
+        self.assertEqual(
+            [2, 5],
+            list(git.modified_lines('/home/user/repo/foo/bar.txt', ' M')))
+        self.assertEqual(
+            [2, 5],
+            list(git.modified_lines('/home/user/repo/foo/bar.txt', 'M ')))
+        self.assertEqual(
+            [2, 5],
+            list(git.modified_lines('/home/user/repo/foo/bar.txt', 'MM')))
         expected_calls = [
             mock.call(
                 ['git', 'blame', '--porcelain', '/home/user/repo/foo/bar.txt'])
@@ -176,18 +174,18 @@ class GitTest(unittest.TestCase):
         self.assertEqual(expected_calls, check_output.call_args_list)
 
     def test_modified_lines_new_addition(self):
-        self.assertEqual(
-            None, git.modified_lines('/home/user/repo/foo/bar.txt', 'A '))
+        self.assertEqual(None,
+                         git.modified_lines('/home/user/repo/foo/bar.txt',
+                                            'A '))
 
     def test_modified_lines_untracked(self):
-        self.assertEqual(
-            None, git.modified_lines('/home/user/repo/foo/bar.txt', '??'))
+        self.assertEqual(None,
+                         git.modified_lines('/home/user/repo/foo/bar.txt',
+                                            '??'))
 
     def test_modified_lines_no_info(self):
-        self.assertEqual([],
-                         list(
-                             git.modified_lines('/home/user/repo/foo/bar.txt',
-                                                None)))
+        self.assertEqual(
+            [], list(git.modified_lines('/home/user/repo/foo/bar.txt', None)))
 
     @mock.patch('subprocess.check_output', return_value=b'0a' * 20 + b'\n')
     def test_last_commit(self, check_output):

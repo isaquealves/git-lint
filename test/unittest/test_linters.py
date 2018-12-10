@@ -35,9 +35,9 @@ class LintersTest(unittest.TestCase):
             check_output.return_value = os.linesep.join(
                 ['Line 1:1: 1', 'Line 5:2: 5 ·', 'Line 7:3: 7',
                  'Line 9:4: 9']).encode('utf-8')
-            command = functools.partial(
-                linters.lint_command, 'l', 'linter', ['-f', '--compact'],
-                r'^Line (?P<line>{lines}):(?P<column>\d+): (?P<message>.*)$')
+            command = functools.partial(linters.lint_command, 'l', 'linter', [
+                '-f', '--compact'
+            ], r'^Line (?P<line>{lines}):(?P<column>\d+): (?P<message>.*)$')
             filename = 'foo.txt'
             self.assertEqual({
                 filename: {
@@ -123,9 +123,9 @@ class LintersTest(unittest.TestCase):
                         side_effect=subprocess.CalledProcessError(
                             1, 'linter', output)) as check_output, \
                 mock.patch('os.path.getmtime', side_effect=[1, 0, 1, 0]):
-            command = functools.partial(
-                linters.lint_command, 'l', 'linter', ['-f', '--compact'],
-                '^Line (?P<line>{lines}): (?P<message>.*)$')
+            command = functools.partial(linters.lint_command, 'l', 'linter', [
+                '-f', '--compact'
+            ], '^Line (?P<line>{lines}): (?P<message>.*)$')
             filename = 'foo.txt'
             self.assertEqual({
                 filename: {
@@ -178,8 +178,8 @@ class LintersTest(unittest.TestCase):
                         side_effect=OSError('Not found')) as check_output, \
                 mock.patch('os.path.getmtime', side_effect=[1, 0]):
             command = functools.partial(linters.lint_command, 'l', 'linter',
-                                        ['-f', '--compact'],
-                                        '^Line ({lines}):')
+                                        ['-f',
+                                         '--compact'], '^Line ({lines}):')
             filename = 'foo.txt'
             output = command(filename, lines=[3, 5, 7])
             self.assertEqual(1, len(output[filename]['error']))
@@ -193,9 +193,9 @@ class LintersTest(unittest.TestCase):
             self.assertEqual(expected_calls, check_output.call_args_list)
 
     def test_lint(self):
-        linter1 = functools.partial(
-            linters.lint_command, 'l1', 'linter1', ['-f'],
-            '^Line (?P<line>{lines}): (?P<message>.*)$')
+        linter1 = functools.partial(linters.lint_command, 'l1', 'linter1', [
+            '-f'
+        ], '^Line (?P<line>{lines}): (?P<message>.*)$')
         linter2 = functools.partial(
             linters.lint_command, 'l2', 'linter2', [],
             '^ line (?P<line>{lines}): (?P<message>.*)$')
@@ -230,9 +230,9 @@ class LintersTest(unittest.TestCase):
             self.assertEqual(expected_calls, check_output.call_args_list)
 
     def test_lint_output_is_sorted(self):
-        linter1 = functools.partial(
-            linters.lint_command, 'l1', 'linter1', ['-f'],
-            '^Line (?P<line>{lines}): (?P<message>.*)$')
+        linter1 = functools.partial(linters.lint_command, 'l1', 'linter1', [
+            '-f'
+        ], '^Line (?P<line>{lines}): (?P<message>.*)$')
         linter2 = functools.partial(
             linters.lint_command, 'l2', 'linter2', [],
             '^ line (?P<line>{lines}): (?P<message>.*)$')
@@ -284,9 +284,9 @@ class LintersTest(unittest.TestCase):
             }, linters.lint(filename, lines=None, config=config))
 
     def test_lint_one_empty_lint(self):
-        linter1 = functools.partial(
-            linters.lint_command, 'l1', 'linter1', ['-f'],
-            '^Line (?P<line>{lines}): (?P<message>.*)$')
+        linter1 = functools.partial(linters.lint_command, 'l1', 'linter1', [
+            '-f'
+        ], '^Line (?P<line>{lines}): (?P<message>.*)$')
         linter2 = functools.partial(
             linters.lint_command, 'l2', 'linter2', [],
             '^ line (?P<line>{lines}): (?P<message>.*)$')

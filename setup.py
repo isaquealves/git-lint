@@ -35,10 +35,8 @@ setup(
     url='http://github.com/sk-/git-lint',
     packages=find_packages(exclude=['test']),
     package_dir={'gitlint': 'gitlint'},
-    package_data={
-        'gitlint': ['configs/*'],
-        '': ['README.rst', 'LICENSE']
-    },
+    package_data={'gitlint': ['configs/*'],
+                  '': ['README.rst', 'LICENSE']},
     scripts=[
         'scripts/git-lint',
         'scripts/pre-commit.git-lint.sh',
@@ -79,5 +77,4 @@ setup(
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Topic :: Software Development :: Version Control',
-    ],
-)
+    ], )
