@@ -161,4 +161,4 @@ class HgTest(unittest.TestCase):
 
     def test_get_commitmsg_file_path(self):
         self.assertEqual('/home/user/repo/.hg/last-message.txt',
-                         gitlint.get_commitmsg_file_path('/home/user/repo/'))
+                         hg.get_commitmsg_file_path('/home/user/repo/'))
