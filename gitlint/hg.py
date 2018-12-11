@@ -30,10 +30,6 @@ def repository_root():
         return None
 
 
-def get_commitmsg_file_path(repo_root):
-    return os.path.join(repo_root, '.hg', 'last-message.txt')
-
-
 def last_commit():
     """Returns the SHA1 of the last commit."""
     try:

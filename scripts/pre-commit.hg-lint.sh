@@ -38,11 +38,12 @@ has_removed_files(){
 
 has_removed_files
 
+COMMIT_MESSAGE=`hg log -r $HG_NODE --template {desc}`
 
 # Add switches to check for -m (modified) and -a (added files)
 # removed and deleted files don't need to be checked ;)
 hg status -m -a --change $HG_NODE | cut -b 3- | tr '\n' '\0' |
-xargs --null --no-run-if-empty git-lint;
+xargs --null --no-run-if-empty git-lint --message="$COMMIT_MESSAGE";
 
 if [ "$?" != "0" ]; then
   echo "There are some problems with the modified files.";

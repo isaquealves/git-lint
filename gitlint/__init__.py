@@ -73,27 +73,22 @@ def is_mercurial(vcs):
     return isinstance(vcs, ModuleType) and vcs.__name__ == 'gitlint.hg'
 
 
-def is_merge_commit(vcs, repo_root):
+def is_merge_commit(message):
     """Check if submitted commit is a merge commit
     Args:
-        vcs: Module reference for one of gitlint.hg or gitlint.git
-        repository_root: the absolute path of the repository's root.
+        message: The current changeset commit message
     Returns: Boolean value depending on the content of the message.
         True if the commit message contains the 'merg' word root.
     """
-    file_path = vcs.get_commitmsg_file_path(repo_root)
 
-    if not os.path.exists(file_path):
+    if not message:
         return False
 
-    with open(file_path, 'r') as message_file:
-        message = message_file.readline()
-
     words = message.split(' ')
-
     for word in words:
         if word.lower().startswith(MERGE_STRING_ROOT):
             return True
+
     return False
 
 
@@ -253,9 +248,9 @@ def main(argv, stdout=sys.stdout, stderr=sys.stderr):
     if vcs is None:
         stderr.write('fatal: Not a git repository' + linesep)
         return 128
-
+    message = arguments.get('--message', '')
     if is_mercurial(vcs):
-        if is_merge_commit(vcs, repository_root):
+        if is_merge_commit(message):
             print_merge_commit_warning(stdout, linesep)
             return 0
 
